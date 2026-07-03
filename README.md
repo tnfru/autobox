@@ -1,5 +1,9 @@
 # autobox
 
+# ARCHIVED AS AUTOMODE IS MUCH BETTER
+
+
+
 ### Run multiple Claude agents in parallel. Keep your git history safe.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
