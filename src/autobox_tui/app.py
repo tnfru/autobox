@@ -28,7 +28,7 @@ from autobox_tui.data import (
     stop_agent,
 )
 
-DETACH_KEYS = "ctrl-q"
+TMUX_SESSION = "claude"
 THEME_FILE = os.path.join(
     os.environ.get("XDG_CONFIG_HOME", os.path.expanduser("~/.config")),
     "autobox",
@@ -138,9 +138,10 @@ class AgentItem(ListItem):
         else:
             status_styled = f"[$warning]{status}[/]"
 
+        pad = max(36 - len(a.name), 1)
         yield Static(
             f"  [bold]{a.name}[/bold]"
-            f"{'':>{36 - len(a.name)}}"
+            f"{'':>{pad}}"
             f"{status_styled:>20}"
             f"  [dim]{a.age}[/dim]",
             markup=True,
@@ -473,9 +474,15 @@ def main() -> None:
         app.focus_agents = focus_agents
         app.run()
         if app.attach_container:
-            subprocess.run(
-                ["docker", "attach", f"--detach-keys={DETACH_KEYS}", app.attach_container]
+            result = subprocess.run(
+                ["docker", "exec", "-it", app.attach_container,
+                 "tmux", "attach", "-t", TMUX_SESSION]
             )
+            if result.returncode != 0:
+                subprocess.run(
+                    ["docker", "attach", "--detach-keys=ctrl-q",
+                     app.attach_container]
+                )
             focus_agents = True
             continue
         if app.enter_worktree:
